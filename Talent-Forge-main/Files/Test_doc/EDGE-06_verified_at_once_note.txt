@@ -1,0 +1,2 @@
+EDGE-06: Approve a doc, then re-approve or edit.
+Expect verified_at to remain the original timestamp.

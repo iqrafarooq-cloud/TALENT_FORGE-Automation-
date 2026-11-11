@@ -1,0 +1,16 @@
+{
+  "pageTitle": "FAQs\n   فاكس",
+  "navLabel": "FAQs\n   فاكس",
+  "searchPlaceholder": "ابحث عن طريق السؤال أو الكلمة المفتاحية.",
+  "categories": {
+    "all": "الكل",
+    "general": "عام",
+    "myTracks": "مساراتي",
+    "coursesLearnings": "الدورات الدراسية والتعلم",
+    "certificates": "شهادات",
+    "referEarn": "إحالة وكسب"
+  },
+  "emptyState": "لا توجد أسئلة تطابق بحثك أو ترشيحك.",
+  "errorState": "لم نتمكن من تحميل الأسئلة الشائعة. الرجاء المحاولة مرة أخرى في وقت لاحق.",
+  "loading": "تحميل الأسئلة الشائعة..."
+}

@@ -1,0 +1,1589 @@
+{
+  "_schema_version": 1,
+  "_note_purpose": "Test data for the AI document-verification automation. One entry per file in Files/Test_doc. Expected results live HERE and only here; observed results are never written back into this file.",
+  "_note_expected_pending": "Every `expected` block is null pending the expected-results table from sections 1-13 of the requirement, which did not reach the automation author. A null expectation is reported as PENDING and NEVER as a pass: docVerificationEvidence.js counts it as an unverified document and the run prints the count loudly. Fill `expected` in and nothing else needs to change.",
+  "_note_declared_data": "The `declared` block is the applicant's declared input, which the API requires in order to accept an upload at all. Where a document deliberately carries an INVALID date (a future issue date, an expiry before its issue), the declared value is a VALID one and `declared_note` records the divergence. Reason: the criterion under test is whether the AI judges the DOCUMENT's dates, and declaring the invalid value risks the serializer rejecting the upload so the AI never sees the file. A rejected upload proves nothing about date validity.",
+  "_note_ordering": "`order` is load-bearing, not cosmetic. cross_document_consistency is evaluated against everything already submitted, so NAME-06 (first-ever document) must precede NAME-01/02/05, the two wrong-name documents must follow them, and EDGE-03 (the corrected re-upload) must follow NAME-03. Documents MUST be uploaded in ascending `order` and this suite must not be parallelised.",
+  "_note_isolation": "MEASURED 2026-08-24, and PROVED rather than assumed: DELETE /candidate/profile/<category>/<id>/ returns 204 and removes the profile ENTRY, but the document row SURVIVES (document count 102 -> 102, and the specific row was still present afterwards). There is no DELETE for a document row anywhere in the API. So an account CANNOT be cleaned, and uploads are permanent. THIS MATTERS LESS THAN IT LOOKS: six of the seven criteria - date_validity, issuing_organisation, transcript_content, authenticity, identity_name_match and the extracted fields - are evaluated against THAT DOCUMENT ALONE, so history is irrelevant to them and they are fully testable on a shared account. Only cross_document_consistency looks at other documents; see _note_cross_document.",
+  "declared": {
+    "legal_name": "Abdul Musawwir Siddiqui",
+    "first_name": "Abdul Musawwir",
+    "last_name": "Siddiqui",
+    "_note": "Verified live against GET /auth/me/ for abdul.musawwir@bytecorp.io (user id 7) on 2026-08-24. Every fixture except the three name-defect documents names this person, so the identity_name_match and cross_document_consistency criteria are only meaningful while the signed-in candidate is this account."
+  },
+  "documents": [
+    {
+      "id": "NAME-06",
+      "file": "NAME-06_transcript_first_ever_doc.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "cross-document"
+      ],
+      "order": 10,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Intended as the very first document on the account, so cross_document_consistency has nothing to contradict. NOT achievable on this account - see _note_isolation.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan",
+        "role": "first_document"
+      }
+    },
+    {
+      "id": "NAME-01",
+      "file": "NAME-01_transcript_exact_name.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "positive"
+      ],
+      "order": 11,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "NAME-02",
+      "file": "NAME-02_transcript_spacing_variance.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 12,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Document reads 'AbdulMusawwir Siddiqui' - the space is missing. Tests whether name matching tolerates spacing variance.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "missing_space",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "NAME-05",
+      "file": "NAME-05_transcript_same_name_second_doc.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "cross-document"
+      ],
+      "order": 13,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Master's",
+        "field_of_study": "Data Science",
+        "start_date": "2022-09-01",
+        "end_date": "2024-06-15"
+      },
+      "declared_note": "A second, genuinely different qualification (MSc Data Science, conferred 2024) carrying the SAME name. Declared data mirrors the document so the only thing under test is cross-document name agreement.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan",
+        "role": "second_document"
+      }
+    },
+    {
+      "id": "NAME-03",
+      "file": "NAME-03_transcript_different_name.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 14,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Document names 'John Doe'. Also the precondition for EDGE-03.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "different_person",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "NAME-04",
+      "file": "NAME-04_transcript_name_conflict.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 15,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Document names 'Jon Smith-Doe' - close enough to look like a near-match, far enough to be a different person. Tests that tolerance does not become blindness.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "different_person",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "NAME-07",
+      "file": "NAME-07_transcript_first_name_differs.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 16,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Only the FIRST name differs (Ahmed vs Abdul); middle and last match. NAME-01 is the control.",
+      "properties": {
+        "kind": "transcript",
+        "name": "first_differs",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "NAME-08",
+      "file": "NAME-08_transcript_last_name_differs.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 17,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Only the LAST name differs (Rahman vs Siddiqui); first and middle match.",
+      "properties": {
+        "kind": "transcript",
+        "name": "last_differs",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "NAME-09",
+      "file": "NAME-09_transcript_uppercase_name.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 18,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The same person in upper case. A flag here is a FALSE POSITIVE, not a defect in the document.",
+      "properties": {
+        "kind": "transcript",
+        "name": "uppercase",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "NAME-10",
+      "file": "NAME-10_transcript_extra_spaces.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 19,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Extra spaces between the name parts. NAME-02 is the opposite case (a space removed); together they bound whitespace tolerance.",
+      "properties": {
+        "kind": "transcript",
+        "name": "extra_spaces",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "ORG-01",
+      "file": "ORG-01_transcript_known_institution.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "positive"
+      ],
+      "order": 20,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Declared institution matches the document verbatim. NOTE: the institution list holds BOTH 'King Saud University' (id 117) and 'King Saud University (KSU)' (id 1); the client resolves by exact name and refuses an ambiguous one.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "NAME-11",
+      "file": "NAME-11_transcript_reversed_order.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 20,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Surname first. Whether this should match is a PRODUCT decision; the scenario asserts the configured rule is applied, not a verdict.",
+      "properties": {
+        "kind": "transcript",
+        "name": "reversed",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "ORG-02",
+      "file": "ORG-02_work_letter_verified_company.pdf",
+      "category": "WORKEXPERIENCE",
+      "types": [
+        "positive"
+      ],
+      "order": 21,
+      "declared": {
+        "company": "Systems Limited Pakistan",
+        "experience": "full_time",
+        "designation": "Senior Software Engineer",
+        "start_date": "2022-07-01",
+        "end_date": null
+      },
+      "declared_note": "end_date null means current employment; is_current is derived server-side and is readOnly, so omitting end_date is the only way to express 'to Present'.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "work_letter",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "open_ended",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "NAME-12",
+      "file": "NAME-12_transcript_missing_middle_name.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 21,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The middle name dropped - the commonest real-world legal-name variance.",
+      "properties": {
+        "kind": "transcript",
+        "name": "missing_middle",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "ORG-03",
+      "file": "ORG-03_transcript_unknown_institution.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 22,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The document is issued by 'Institute of Advanced Space Studies, Zanzibar', which is not in the platform's institution list - that is the point of the fixture, and it also means it cannot be DECLARED. So this row unavoidably tests an unrecognised issuer AND a declared-vs-document mismatch at once.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "unrecognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "ORG-04",
+      "file": "ORG-04_work_letter_unverified_company.pdf",
+      "category": "WORKEXPERIENCE",
+      "types": [
+        "negative"
+      ],
+      "order": 23,
+      "declared": {
+        "company": "ByteCorp Solutions",
+        "experience": "full_time",
+        "designation": "Junior Developer",
+        "start_date": "2020-01-01",
+        "end_date": "2022-06-30"
+      },
+      "declared_note": "Company is free text on this endpoint, so the declared value can mirror the document exactly. The only thing under test is whether the organisation is recognised.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "work_letter",
+        "name": "exact",
+        "issuer": "unrecognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "ORG-05",
+      "file": "ORG-05_transcript_no_issuer.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 24,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The document carries no issuer line at all.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "absent",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "DATE-01",
+      "file": "DATE-01_transcript_future_conferral.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 30,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "DIVERGES: the document states a conferral date of 15 June 2030. Declared end_date is the valid 2022-06-15 so the upload is accepted and the AI is the thing judging the document's date.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "future_conferral",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "DATE-02",
+      "file": "DATE-02_work_letter_current_open_end.pdf",
+      "category": "WORKEXPERIENCE",
+      "types": [
+        "negative"
+      ],
+      "order": 31,
+      "declared": {
+        "company": "Systems Limited Pakistan",
+        "experience": "full_time",
+        "designation": "Senior Software Engineer",
+        "start_date": "2022-07-01",
+        "end_date": "2030-12-31"
+      },
+      "declared_note": "The FILENAME says 'current_open_end' but the letter states 'to 31 December 2030' - a future END date, not an open end. Per the decision of 2026-08-24 this row keeps the future-end-date negative case and DATE-06 was added as the genuinely open-ended positive case. Declared end_date mirrors the document here because a future end date is a legitimate declared value.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "work_letter",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "future_end_date",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "DATE-06",
+      "file": "DATE-06_work_letter_open_ended.pdf",
+      "category": "WORKEXPERIENCE",
+      "types": [
+        "positive"
+      ],
+      "order": 32,
+      "declared": {
+        "company": "Systems Limited Pakistan",
+        "experience": "full_time",
+        "designation": "Senior Software Engineer",
+        "start_date": "2022-07-01",
+        "end_date": null
+      },
+      "declared_note": "NEW FIXTURE, built 2026-08-24 by scripts/make-doc-verification-fixtures.js. Genuinely open-ended employment ('to Present') so the AC clause 'not in the future unless the document is current/active' has a positive case. DATE-02 covers the negative half.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "work_letter",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "open_ended",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "DATE-03",
+      "file": "DATE-03_transcript_malformed_date.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 33,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The document's conferral date reads '32nd of Never, 202X'. Its ISSUE date is valid, which is the likeliest reason the AI has been passing this row - it may be judging the date it can parse and ignoring the one it cannot.",
+      "expected": null,
+      "known_defect": "Recorded 2026-08-21: date_validity observed as 'pass' where the AC requires all dates to be logically valid. Expected stays 'fail' and this row is expected to FAIL until the product is fixed.",
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "malformed",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "DATE-04",
+      "file": "DATE-04_certificate_expiry_before_issue.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "negative"
+      ],
+      "order": 34,
+      "declared": {
+        "certificate_name": "Project Management Professional",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2021-06-15",
+        "expiry_date": "2024-06-15"
+      },
+      "declared_note": "DIVERGES: the document states issue 15 June 2025 and expiry 15 June 2023. Declared dates are a valid ordered pair so the serializer cannot refuse the upload; the inversion under test is the one printed on the document.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "expiry_before_issue",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "DATE-05",
+      "file": "DATE-05_certificate_valid_dates.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "positive"
+      ],
+      "order": 35,
+      "declared": {
+        "certificate_name": "Certified Ethical Hacker",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2021-06-15",
+        "expiry_date": "2024-06-15"
+      },
+      "declared_note": "Both dates mirror the document. Note the expiry is in the PAST relative to today, which is an expired certificate, not an invalid one - the AC forbids future dates, not past ones.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "DATE-07",
+      "file": "DATE-07_certificate_active_future_expiry.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "positive",
+        "edge-case"
+      ],
+      "order": 36,
+      "declared": {
+        "certificate_name": "ISO 27001 Lead Implementer",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2025-07-20",
+        "expiry_date": "2027-09-27"
+      },
+      "declared_note": "A CURRENT certificate whose expiry is legitimately in the future. The AC forbids future dates only when the document is not current, so a flag here is a false positive.",
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "active_future_expiry",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "DATE-08",
+      "file": "DATE-08_certificate_expiry_today.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 37,
+      "declared": {
+        "certificate_name": "Certified Information Systems Auditor",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2024-08-24",
+        "expiry_date": "2026-08-24"
+      },
+      "declared_note": "Expiry exactly equal to TODAY, the boundary between active and expired. TIME-SENSITIVE: rebuild with `node scripts/make-doc-verification-fixtures.js DATE-08` before running, or the step fails saying the fixture is stale.",
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "expiry_today",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan",
+        "timeSensitive": true
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "CONT-01",
+      "file": "CONT-01_transcript_complete.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "positive"
+      ],
+      "order": 40,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Byte-identical to NAME-01, NAME-06 and ORG-01. Kept separate because the context differs, not the file - see section 3 of DOC_VERIFICATION_TEST_MATRIX.md.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "CONT-02",
+      "file": "CONT-02_transcript_missing_major.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 41,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The document has no Major/Field line. The declared field of study is still supplied because the endpoint requires it, so this row also proves the AI reads the DOCUMENT rather than the declared form.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "missing_major",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "CONT-03",
+      "file": "CONT-03_transcript_only_degree.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 42,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The file is a CERTIFICATE, not a transcript. Uploaded as EDUCATION deliberately, because that is what forces the transcript_content criterion to apply; uploaded as a certification it would prove nothing. The 2026-08-21 run uploaded it as WORKEXPERIENCE, which is why its recorded result is not meaningful.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "missing_multiple",
+        "authenticity": "ordinary_scan"
+      },
+      "content_missing": [
+        "major",
+        "graduation_date"
+      ],
+      "content_missing_note": "CONT-03 is \"only degree\": it KEEPS the degree line and omits the other two. The single-field fixtures do not need this key - their content property already names the one field they omit - but missing_multiple does not say WHICH, and assuming all three would demand the AI report a degree that is present."
+    },
+    {
+      "id": "CONT-04",
+      "file": "CONT-04_work_letter_exempt.pdf",
+      "category": "WORKEXPERIENCE",
+      "types": [
+        "positive"
+      ],
+      "order": 43,
+      "declared": {
+        "company": "Systems Limited Pakistan",
+        "experience": "full_time",
+        "designation": "Senior Software Engineer",
+        "start_date": "2022-07-01",
+        "end_date": null
+      },
+      "declared_note": "Byte-identical to ENG-07 and ORG-02. A work letter is exempt from transcript_content, which is the rule this row exists to prove.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "work_letter",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "open_ended",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "CONT-05",
+      "file": "CONT-05_transcript_missing_degree.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 44,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Major and conferral date present, DEGREE absent. Isolates one missing field where CONT-03 is missing several.",
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "missing_degree",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "CONT-06",
+      "file": "CONT-06_transcript_missing_graduation_date.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 45,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Degree and major present, CONFERRAL DATE absent.",
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "missing_date",
+        "authenticity": "ordinary_scan"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "AUTH-01",
+      "file": "AUTH-01_certificate_ordinary_scan.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "negative",
+        "edge-case"
+      ],
+      "order": 50,
+      "declared": {
+        "certificate_name": "Google Cloud Professional Data Engineer",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-10-10",
+        "expiry_date": null
+      },
+      "declared_note": "An ordinary scan with no seal and no digital certificate. The AC only requires authenticity of E-TRANSCRIPTS, so neither pass nor fail is clearly wrong here; the expectation should be a set.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "AUTH-02",
+      "file": "AUTH-02_transcript_visible_tampering.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 51,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "FIXTURE REBUILT 2026-08-24. The original contained no visible tampering at all - just a truncated word 'Revis' on an otherwise cleanly rendered PDF - so the recorded 'expected fail, got uncertain' discrepancy was most likely a fixture defect rather than an AI defect. Rebuilt by scripts/make-doc-verification-fixtures.js with a visible white-out patch over the original name, a replacement name in a mismatched font and size, a visible splice seam and a REVISED stamp.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "tampered"
+      }
+    },
+    {
+      "id": "AUTH-03",
+      "file": "AUTH-03_e_transcript_no_digital_cert.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "negative"
+      ],
+      "order": 52,
+      "declared": {
+        "certificate_name": "E-Transcript Digital Credential (No Seal)",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-10-10",
+        "expiry_date": null
+      },
+      "declared_note": "Self-declaring as an e-transcript with no seal, so this is the one authenticity row where the AC is definite and a single expected verdict can be pinned.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "no_digital_cert"
+      }
+    },
+    {
+      "id": "AUTH-04",
+      "file": "AUTH-04_genuine_e_transcript_faint_seal.png",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 53,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "faint_seal"
+      }
+    },
+    {
+      "id": "AUTH-05",
+      "file": "AUTH-05_too_degraded_to_judge.png",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 54,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Deliberately illegible. 'uncertain' is the correct verdict here and a confident pass OR a confident fail is the defect.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "unreadable",
+        "issuer": "unreadable",
+        "dates": "unreadable",
+        "content": "unreadable",
+        "authenticity": "illegible"
+      }
+    },
+    {
+      "id": "AUTH-06",
+      "file": "AUTH-06_e_transcript_invalid_digital_cert.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative"
+      ],
+      "order": 55,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "A digital certificate that FAILS validation. Distinct from AUTH-03, which carries none at all - the AC requires a VALID certificate, so \"absent\" and \"invalid\" are different states.",
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "invalid_digital_cert"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "ENG-01",
+      "file": "ENG-01_clean_transcript_all_pass.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "positive",
+        "e2e"
+      ],
+      "order": 60,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The one document where every criterion should pass, so it is the only row that can prove the AC clause 'documents that pass all verification criteria must be approved without requiring any agent action'. RESOLVED 2026-08-24: the recorded 2026-08-21 defect (expected APPROVED, observed AWAITING) no longer reproduces. ENG-01_clean_transcript_all_pass.pdf is the ONE document on the account where every criterion passed, and it is APPROVED - so the AC clause \"documents that pass all criteria must be approved without agent action\" works.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan",
+        "role": "all_criteria_pass"
+      }
+    },
+    {
+      "id": "ENG-02",
+      "file": "ENG-02_certificate_future_issue_date.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "negative",
+        "e2e"
+      ],
+      "order": 61,
+      "declared": {
+        "certificate_name": "AWS Certified Solutions Architect",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-06-15",
+        "expiry_date": "2028-06-15"
+      },
+      "declared_note": "DIVERGES: the document states an issue date of 15 June 2030. Declared dates are valid so the upload reaches the AI.",
+      "expected": null,
+      "known_defect": "Recorded 2026-08-21: date_validity observed as 'pass' on a document whose printed issue date is in the future. Expected stays 'fail'.",
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "future_issue",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "ENG-03",
+      "file": "ENG-03_transcript_name_mismatch.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative",
+        "e2e"
+      ],
+      "order": 62,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "different_person",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "ENG-04",
+      "file": "ENG-04_transcript_malformed_date_unknown_institution.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative",
+        "e2e"
+      ],
+      "order": 63,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Two defects in one document: conferral date 'not-a-date' and an unrecognised issuer. Both must be reported, which is why the comparison collects findings instead of throwing on the first.",
+      "expected": null,
+      "known_defect": "Recorded 2026-08-21: date_validity observed as 'pass'. Expected stays 'fail'.",
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "unrecognised",
+        "dates": "malformed",
+        "content": "complete",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "ENG-05",
+      "file": "ENG-05_blurry_legible_scan.png",
+      "category": "EDUCATION",
+      "types": [
+        "edge-case",
+        "e2e"
+      ],
+      "order": 64,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Blurry but legible - the AI should still extract the fields. Contrast with AUTH-05, which is illegible.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "blurry_legible"
+      }
+    },
+    {
+      "id": "ENG-06",
+      "file": "ENG-06_certificate_minimal_fields.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "positive",
+        "e2e"
+      ],
+      "order": 65,
+      "declared": {
+        "certificate_name": "Leadership Excellence Award",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-03-10",
+        "expiry_date": null
+      },
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "ENG-07",
+      "file": "ENG-07_work_experience_letter.pdf",
+      "category": "WORKEXPERIENCE",
+      "types": [
+        "positive",
+        "e2e"
+      ],
+      "order": 66,
+      "declared": {
+        "company": "Systems Limited Pakistan",
+        "experience": "full_time",
+        "designation": "Senior Software Engineer",
+        "start_date": "2022-07-01",
+        "end_date": null
+      },
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "work_letter",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "open_ended",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "FILE-01-PDF",
+      "file": "FILE-01_allowed_pdf.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "file-validation",
+        "positive"
+      ],
+      "order": 70,
+      "declared": {
+        "certificate_name": "Sample Certification PDF",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan",
+        "file": "allowed_pdf"
+      }
+    },
+    {
+      "id": "FILE-01-PNG",
+      "file": "FILE-01_allowed_png.png",
+      "category": "CERTIFICATION",
+      "types": [
+        "file-validation",
+        "positive"
+      ],
+      "order": 71,
+      "declared": {
+        "certificate_name": "Sample Certification PNG",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan",
+        "file": "allowed_png"
+      }
+    },
+    {
+      "id": "FILE-02-DOCX",
+      "file": "FILE-02_disallowed_docx.docx",
+      "category": "CERTIFICATION",
+      "types": [
+        "file-validation",
+        "negative"
+      ],
+      "order": 72,
+      "declared": {
+        "certificate_name": "Disallowed DOCX",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "declared_note": "Observed HTTP 422 on 2026-08-21. The rejection REASON must be asserted, not merely the refusal.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "file": "disallowed_docx"
+      }
+    },
+    {
+      "id": "FILE-02-JPG",
+      "file": "FILE-02_disallowed_jpg.jpg",
+      "category": "CERTIFICATION",
+      "types": [
+        "file-validation",
+        "negative"
+      ],
+      "order": 73,
+      "declared": {
+        "certificate_name": "Disallowed JPG",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "declared_note": "Observed HTTP 422 on 2026-08-21. Whether excluding JPG while accepting PNG is intended is a PRODUCT question - flagged in DOC_VERIFICATION_TEST_MATRIX.md section 5, not decided here.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "file": "disallowed_jpg"
+      }
+    },
+    {
+      "id": "FILE-03",
+      "file": "FILE-03_oversized_above_5mb.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "file-validation",
+        "negative"
+      ],
+      "order": 74,
+      "declared": {
+        "certificate_name": "Oversized Certificate",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "declared_note": "8,672,391 bytes, well over the documented 5 MB limit.",
+      "expected": null,
+      "known_defect": "Recorded 2026-08-21: the upload was ACCEPTED where a rejection is expected, and the AI then failed with a size error. Expected stays 'rejected'.",
+      "properties": {
+        "kind": "certificate",
+        "file": "oversized"
+      }
+    },
+    {
+      "id": "FILE-04",
+      "file": "FILE-04_between_4_5_and_5mb.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "file-validation",
+        "edge-case"
+      ],
+      "order": 75,
+      "declared": {
+        "certificate_name": "Near Limit Certificate",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "declared_note": "4,952,868 bytes: UNDER the 5 MB upload limit but OVER the model's 4,718,592-byte inline limit. So it uploads and can never be verified. This is a genuine product gap and the only fixture that reaches a real ai_verification.error, which also makes it the honest way to cover EDGE-01.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "file": "near_ai_inline_limit"
+      }
+    },
+    {
+      "id": "FILE-05",
+      "file": "FILE-05_presigned_download_safety.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 76,
+      "declared": {
+        "certificate_name": "Presigned Download Safety Test",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "declared_note": "Its assertion is about the returned file URL, not the AI verdict: the document must be served by a time-limited presigned link rather than a publicly readable object.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "certificate",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan",
+        "file": "presigned_check"
+      }
+    },
+    {
+      "id": "FILE-06",
+      "file": "FILE-06_blank_document.pdf",
+      "category": "CERTIFICATION",
+      "types": [
+        "edge-case"
+      ],
+      "order": 77,
+      "declared": {
+        "certificate_name": "Blank Document",
+        "issuing_organization": "King Saud University",
+        "issue_date": "2023-01-01",
+        "expiry_date": null
+      },
+      "declared_note": "A structurally valid PDF containing nothing. Not a zero-byte file: the parser must open it and the model must render it, and find nothing to verify.",
+      "properties": {
+        "kind": "blank",
+        "file": "blank"
+      },
+      "expected": null,
+      "known_defect": null
+    },
+    {
+      "id": "EDGE-03",
+      "file": "EDGE-03_reupload_corrected_name.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "e2e",
+        "edge-case"
+      ],
+      "order": 80,
+      "depends_on": "NAME-03",
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The corrected re-upload that must follow NAME-03 and clear its stale AI comment. Ordered last so its precondition definitely exists.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan",
+        "role": "correction_of_NAME-03"
+      }
+    },
+    {
+      "id": "NAME-13",
+      "file": "NAME-13_work_letter_different_name.pdf",
+      "category": "WORKEXPERIENCE",
+      "types": [
+        "negative"
+      ],
+      "order": 81,
+      "declared": {
+        "company": "Systems Limited Pakistan",
+        "experience": "full_time",
+        "designation": "Senior Software Engineer",
+        "start_date": "2022-07-01",
+        "end_date": null
+      },
+      "declared_note": "Declared against the candidate account as usual; only the NAME ON THE LETTER differs. Uploaded last so it cannot poison the cross-document corpus the earlier documents are judged against.",
+      "expected": null,
+      "known_defect": null,
+      "properties": {
+        "kind": "work_letter",
+        "name": "different_person",
+        "issuer": "recognised",
+        "dates": "open_ended",
+        "content": "not_a_transcript",
+        "authenticity": "ordinary_scan"
+      }
+    },
+    {
+      "id": "EDU-APPROVED",
+      "file": "EDU-APPROVED_abdul_musawwir_siddiqui_clean.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "positive",
+        "lifecycle"
+      ],
+      "order": 90,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Computer Science",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "Declared values are taken FROM THE DOCUMENT (conferral 2022-06-15, major Computer Science, King Saud University) so no criterion can fail on a declared/document disagreement the scenario never asked about. That mistake inflated the measured AI mismatch rate from 5.3% to 10.2% before probe-ai-verdict-vs-document-condition.js learned to separate the two.",
+      "expected": {
+        "status": "APPROVED",
+        "auto_decided_by_ai": true,
+        "ai_comment": false
+      },
+      "expected_source": "MEASURED live 2026-09-01 on document row 26541: ai_verification.status APPROVED, all six criteria pass, comments []. Not from the requirement table.",
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan",
+        "lifecycle": "auto_approved"
+      }
+    },
+    {
+      "id": "EDU-REVIEW",
+      "file": "EDU-REVIEW_abdul_musawwir_siddiqui_name_mismatch.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative",
+        "lifecycle"
+      ],
+      "order": 91,
+      "declared": {
+        "institution": "King Saud University",
+        "degree": "Bachelor's",
+        "field_of_study": "Software Engineering",
+        "start_date": "2017-09-01",
+        "end_date": "2021-05-20"
+      },
+      "declared_note": "Document names 'Ali Hassan' where the account declares 'Abdul Musawwir Siddiqui'. Every other field is taken from the document, so identity_name_match is the single variable.",
+      "expected": {
+        "status": "AWAITING",
+        "auto_decided_by_ai": false,
+        "ai_comment": false
+      },
+      "expected_source": "INTENDED, not measured. Supplied as the Need Review case. NOTE the AI writes the final status itself and a hard-fail criterion has been measured to drive REVISION directly (rows 26343, 26411), so this document may auto-skip Need Review. status-lifecycle.feature asserts the intent as a @known-issue and drives the agent-decision leg off a separately resolved AWAITING document, so a red here cannot block that leg.",
+      "known_defect": null,
+      "properties": {
+        "kind": "transcript",
+        "name": "different_person",
+        "issuer": "recognised",
+        "dates": "valid_past",
+        "content": "complete",
+        "authenticity": "ordinary_scan",
+        "lifecycle": "needs_review"
+      }
+    },
+    {
+      "id": "EDU-REJECTED",
+      "file": "EDU-REJECTED_abdul_musawwir_siddiqui_future_date.pdf",
+      "category": "EDUCATION",
+      "types": [
+        "negative",
+        "lifecycle"
+      ],
+      "order": 92,
+      "declared": {
+        "institution": "Al Asala College",
+        "degree": "Bachelor's",
+        "field_of_study": "Computer Science",
+        "start_date": "2018-09-01",
+        "end_date": "2022-06-15"
+      },
+      "declared_note": "The DOCUMENT states conferral 2035-01-15 and issue 2034-12-01, both in the future, and carries no Major line. The DECLARED dates cannot match it: the Education form's year dropdown offers 1977-2026 only (measured 2026-09-01), so a future graduation date is not expressible on the form at all. An earlier version declared 2030/2035 and the upload failed with `selectOption: did not find some options` - a fixture fault that reads as a broken form. So date_validity fails here for TWO reasons at once, the future dates on the document and the declared/document disagreement, and the step attaches the AI's own wording so a red row says which it reported. That is acceptable because the assertion is on the STATUS the failure produces, not on the wording of the reason.",
+      "expected": {
+        "status": "REVISION",
+        "auto_decided_by_ai": true,
+        "ai_comment": true
+      },
+      "expected_source": "INTENDED, and consistent with the measured mechanism: a hard-fail criterion drove REVISION with a comment stamped source \"AI\" on rows 26343 and 26411 (2026-08-25).",
+      "known_defect": "The AI has been measured PASSING future conferral dates on DATE-01 and ENG-02 (see the AI-trustworthiness table in CLAUDE.md), so this document may not be auto-rejected at all. Per requirement section 15 a known product defect stays a failing test.",
+      "properties": {
+        "kind": "transcript",
+        "name": "exact",
+        "issuer": "unrecognised",
+        "dates": "future",
+        "content": "missing_major",
+        "authenticity": "ordinary_scan",
+        "lifecycle": "auto_revision"
+      }
+    }
+  ],
+  "not_automatable": [
+    {
+      "id": "EDGE-01",
+      "note": "Bedrock failure must surface as an error rather than a silent pass. Reachable honestly through FILE-04, which produces a real ai_verification.error; forcing a model failure otherwise needs infrastructure access."
+    },
+    {
+      "id": "EDGE-02",
+      "note": "An agent's approve/revision save must not re-queue verification. AUTOMATABLE: approve, then assert ai_verification.version and checked_at are unchanged. Listed here only because it has no document of its own."
+    },
+    {
+      "id": "EDGE-04",
+      "note": "Agent comments must survive re-verification while AI comments are stripped. Automatable if a declared-data edit reliably re-queues, but it depends on comments[].source being correct - and a live AI-worded comment was observed stamped source=AGENT on 2026-08-24, so that is in doubt."
+    },
+    {
+      "id": "EDGE-05",
+      "note": "A link-only save must not queue verification. Needs the link-only code path identified first."
+    },
+    {
+      "id": "EDGE-06",
+      "note": "verified_at must be stamped once. NOT AUTOMATABLE: the field is not exposed on any API response. Needs a backend change before it can be tested at all."
+    }
+  ],
+  "_note_properties": "Every document carries a `properties` block describing WHAT IT IS - kind, name variance, issuer, dates, transcript content, authenticity, file. The declarative feature file resolves fixtures through these rather than naming ids in Gherkin, so a scenario reads as the business rule it tests and a fixture can be swapped without touching the Gherkin.",
+  "_note_cross_document": "cross_document_consistency is the ONLY criterion contaminated by a shared account, and it is asymmetric. The account holds documents naming Abdul Musawwir Siddiqui AND John Doe / Jon Smith-Doe / Ali Hassan. Consequences for filling in the `expected` block: (a) FAIL is reliable - a document naming a different person will always find a correct-name document to conflict with, so expect \"fail\" and it will hold. (b) PASS is NOT reliable - a correct-name document can legitimately be flagged against the conflicting names already on the account, and measured across 80 runs the verdict was pass 26 / uncertain 5 / fail 43. So for a positive document use a SET: [\"pass\",\"uncertain\",\"fail\"] asserts nothing and should be avoided - prefer omitting cross_document_consistency from that document's expected block entirely, which the evidence engine reports as PENDING rather than silently passing.",
+  "_note_content_missing": "content_missing lists the required transcript fields a fixture omits, and is only needed where properties.content is missing_multiple. The step that asserts every missing field is reported reads it, so a fixture rebuilt to omit a different set changes the expectation with it.",
+  "_note_lifecycle": "The three EDU-* documents (order 90-92) are the STATUS LIFECYCLE set, supplied 2026-09-01 in Files/3 documents(Approved,requestrevision & need review)/. One document per end state, all naming the same candidate context, so status-lifecycle.feature can drive Approved, Revision Required and Need Review without borrowing a criterion fixture whose purpose is something else. Their `expected` blocks are the ONLY ones filled in, and they are filled from a LIVE MEASUREMENT (EDU-APPROVED reached APPROVED with all six criteria pass on 2026-09-01, document row 26541), not from the requirement table - which has still never been supplied. `expected_source` records which, so a reader can never mistake a measured baseline for an agreed requirement."
+}

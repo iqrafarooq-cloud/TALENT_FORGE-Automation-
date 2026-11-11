@@ -1,0 +1,2 @@
+EDGE-02: Verify agent approval/revision save uses update_fields excluding 'file'.
+No physical document required.

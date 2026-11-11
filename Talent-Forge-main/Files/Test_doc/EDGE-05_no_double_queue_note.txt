@@ -1,0 +1,2 @@
+EDGE-05: Verify that linking a newly created document to its entry (link-only save) does not queue verification.
+No physical document required.

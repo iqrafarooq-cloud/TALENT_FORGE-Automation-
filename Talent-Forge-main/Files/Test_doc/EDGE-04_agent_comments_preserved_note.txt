@@ -1,0 +1,2 @@
+EDGE-04: After an agent adds a comment, trigger AI re-verification (e.g., via declared-data edit).
+Expect agent comments to remain; only AI comments stripped.

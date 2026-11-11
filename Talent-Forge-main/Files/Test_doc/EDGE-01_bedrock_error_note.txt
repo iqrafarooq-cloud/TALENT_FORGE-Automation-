@@ -1,0 +1,2 @@
+EDGE-01: Simulate Bedrock error by blocking network or forcing model failure.
+No physical document required.

@@ -1,0 +1,154 @@
+{
+  "baseline": {
+    "count": 2236,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "actionBy_name": {
+    "count": 2199,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "actionBy_email": {
+    "count": 2197,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "actionBy_email_partial": {
+    "count": 2197,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "actionType": {
+    "count": 3,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Community Created",
+      "entity": "Community",
+      "entity_name": "asd3",
+      "ip": "124.29.228.204",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "entityName": {
+    "count": 3,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Community Created",
+      "entity": "Community",
+      "entity_name": "asd3",
+      "ip": "124.29.228.204",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "ipAddress": {
+    "count": 94,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "location": {
+    "count": 2040,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "endpoint_probe": {
+    "count": 0,
+    "first": null
+  },
+  "eventDetails_probe": {
+    "count": 0,
+    "first": null
+  },
+  "nonsense": {
+    "count": 0,
+    "first": null
+  },
+  "caseUpper": {
+    "count": 2040,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "partial": {
+    "count": 2040,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "whitespace": {
+    "count": 2236,
+    "first": {
+      "actor_name": "super admin",
+      "actor_email": "superadmin@talentforge.com.sa",
+      "action_type_label": "Subscription Price Change Cancelled",
+      "entity": "Configuration",
+      "entity_name": "Quarterly Plan",
+      "ip": "182.184.73.128",
+      "loc": "Karachi, Pakistan"
+    }
+  },
+  "sqlish": {
+    "count": 0,
+    "first": null
+  },
+  "xssish": {
+    "count": 0,
+    "first": null
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "AUTH-02": {
+    "file": "AUTH-02_transcript_visible_tampering.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "AUTH-06": {
+    "file": "AUTH-06_e_transcript_invalid_digital_cert.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "CONT-05": {
+    "file": "CONT-05_transcript_missing_degree.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "CONT-06": {
+    "file": "CONT-06_transcript_missing_graduation_date.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "DATE-06": {
+    "file": "DATE-06_work_letter_open_ended.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "DATE-07": {
+    "file": "DATE-07_certificate_active_future_expiry.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "DATE-08": {
+    "file": "DATE-08_certificate_expiry_today.pdf",
+    "builtOn": "2026-08-25",
+    "timeSensitive": true
+  },
+  "FILE-06": {
+    "file": "FILE-06_blank_document.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "NAME-07": {
+    "file": "NAME-07_transcript_first_name_differs.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "NAME-08": {
+    "file": "NAME-08_transcript_last_name_differs.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "NAME-09": {
+    "file": "NAME-09_transcript_uppercase_name.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "NAME-10": {
+    "file": "NAME-10_transcript_extra_spaces.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "NAME-11": {
+    "file": "NAME-11_transcript_reversed_order.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "NAME-12": {
+    "file": "NAME-12_transcript_missing_middle_name.pdf",
+    "builtOn": "2026-08-24",
+    "timeSensitive": false
+  },
+  "NAME-13": {
+    "file": "NAME-13_work_letter_different_name.pdf",
+    "builtOn": "2026-08-25",
+    "timeSensitive": false
+  }
+}

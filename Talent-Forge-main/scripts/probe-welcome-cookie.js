@@ -1,0 +1,26 @@
+require('dotenv').config();
+const { chromium } = require('playwright');
+const line = console.log;
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(process.env.BASE_URL, { waitUntil: 'domcontentloaded' });
+  await page.locator('input[name="email"]').first().fill(process.env.PROMO_FIXED_AGENT_EMAIL);
+  await page.locator('input[name="password"]').first().fill(process.env.PROMO_FIXED_AGENT_PASSWORD);
+  await page.locator('button[type="submit"]').first().click();
+  await page.waitForURL(/dashboard/, { timeout: 60000, waitUntil: 'commit' });
+  await page.locator('[role="dialog"]').filter({ hasText: /Welcome,/ }).first().waitFor({ state: 'visible', timeout: 20000 });
+  const before = await ctx.cookies();
+  line(`cookies BEFORE dismissal (${before.length}): ${JSON.stringify(before.map((c) => `${c.name}=${String(c.value).slice(0, 40)}`), null, 1)}`);
+  line(`document.cookie BEFORE: ${JSON.stringify(await page.evaluate(() => document.cookie))}`);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(2500);
+  const after = await ctx.cookies();
+  line(`\ncookies AFTER dismissal (${after.length}): ${JSON.stringify(after.map((c) => `${c.name}=${String(c.value).slice(0, 40)}`), null, 1)}`);
+  line(`document.cookie AFTER: ${JSON.stringify(await page.evaluate(() => document.cookie))}`);
+  const names = new Set(before.map((c) => c.name + c.value));
+  line(`\nNEW/CHANGED cookies: ${JSON.stringify(after.filter((c) => !names.has(c.name + c.value)).map((c) => ({ name: c.name, value: String(c.value).slice(0, 80), domain: c.domain })), null, 1)}`);
+  line(`\nIndexedDB databases: ${JSON.stringify(await page.evaluate(() => (indexedDB.databases ? indexedDB.databases().then((d) => d.map((x) => x.name)) : 'n/a')))}`);
+  await ctx.close(); await browser.close();
+})();

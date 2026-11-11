@@ -1,0 +1,11 @@
+{
+    // Tests run through Playwright's own runner (configs/playwright.config.js) - use the official
+    // "Playwright Test for VSCode" extension (ms-playwright.playwright). It lists the generated
+    // specs under .features-gen/all/; run `npm run gen` once if the Testing panel is empty.
+    // Cucumber was removed on 2026-10-06, so the Cucumber *runner* extensions no longer work here.
+    //
+    // The official Cucumber extension (CucumberOpen.cucumber-official) is still useful for
+    // Gherkin highlighting and go-to-step-definition; these tell it where the steps live.
+    "cucumber.features": ["features/**/*.feature"],
+    "cucumber.glue": ["steps/**/*.js"]
+}

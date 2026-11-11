@@ -1,0 +1,2 @@
+EDGE-03: First upload a doc with wrong name (NAME-03). After AI flags it, re-upload this corrected doc.
+Expect prior AI comment to be cleared.
